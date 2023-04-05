@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using System.Text;
 
 public class Game
@@ -19,15 +20,13 @@ public class Game
 
     private Cell[,] cells;
 
-    private Timer timer = null;
+    Stopwatch stopWatch = new Stopwatch();
 
     Movement movement = new Movement();
     Random rnd = new Random();
 
     public void Start()
     {
-        timer = new Timer(TimerCallback, null, 0, 2000);
-
         Console.CursorVisible = false;
         cells = new Cell[height, width];
         for (int y = 0; y < height; y++)
@@ -40,6 +39,8 @@ public class Game
 
         movement.OnMove += MoveCharacter;
         GenerateField();
+        stopWatch.Restart();
+        Timer();
 
         XCurrentPosition = XStartPosition;
         YCurrentPosition = YStartPosition;
@@ -53,6 +54,7 @@ public class Game
     {
         while (isPlaying)
         {
+            Timer();
             movement.CheckButtons(cells, XCurrentPosition, YCurrentPosition, width, height);
         }
 
@@ -60,17 +62,25 @@ public class Game
     public void Stop()
     {
         Console.Beep(1000, 200);
+        
         isPlaying = false;
         Start();
     }
 
-    private static void TimerCallback(Object o)
+    private void Timer()
     {
-        //Console.WriteLine("Time Left: " + DateTime.Now);
+        Console.SetCursorPosition(0,0);
+        stopWatch.Start();
+
+
+        //stopWatch.Stop();
+        TimeSpan elapsed = stopWatch.Elapsed;
+        Console.WriteLine($"Час раунду: {elapsed.Hours}:{elapsed.Minutes}:{elapsed.Seconds}");
     }
 
     public void UpdateFieldOnScreen()
     {
+        Console.SetCursorPosition(0, 1);
         StringBuilder sb = new StringBuilder();
         for (int y = 0; y < height - 1; y++)
         {
@@ -100,7 +110,7 @@ public class Game
             sb.Append("#");
         }
         Console.WriteLine(sb);
-        Console.SetCursorPosition(0,0);
+        //Console.SetCursorPosition(0,0);
     }
 
     public void MoveCharacter(Vector2 lastPosition, Vector2 newPosition)
