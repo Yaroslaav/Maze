@@ -1,4 +1,6 @@
 ﻿using System.Numerics;
+using System.Text;
+
 public class Game
 {
     private bool isPlaying = true;
@@ -17,12 +19,15 @@ public class Game
 
     private Cell[,] cells;
 
+    private Timer timer = null;
 
     Movement movement = new Movement();
     Random rnd = new Random();
 
     public void Start()
     {
+        timer = new Timer(TimerCallback, null, 0, 2000);
+
         Console.CursorVisible = false;
         cells = new Cell[height, width];
         for (int y = 0; y < height; y++)
@@ -58,8 +63,15 @@ public class Game
         isPlaying = false;
         Start();
     }
+
+    private static void TimerCallback(Object o)
+    {
+        //Console.WriteLine("Time Left: " + DateTime.Now);
+    }
+
     public void UpdateFieldOnScreen()
     {
+        StringBuilder sb = new StringBuilder();
         for (int y = 0; y < height - 1; y++)
         {
             for (int x = 0; x < width - 1; x++)
@@ -67,26 +79,27 @@ public class Game
 
                 if (cells[y, x].Wall)
                 {
-                    Console.Write("#");
+                    sb.Append("#");
                 }else if(cells[y, x].Player)
                 {
-                    Console.Write("@");
+                    sb.Append("@");
                 }else if (cells[y, x].Finish)
                 {
-                    Console.Write("_");
+                    sb.Append("_");
                 }
                 else
                 {
-                    Console.Write(".");
+                    sb.Append(".");
                 }
             }
-            Console.Write("#");
-            Console.WriteLine();
+            sb.Append("#");
+            sb.Append("\n");
         }
         for (int i = 0; i < width; i++)
         {
-            Console.Write("#");
+            sb.Append("#");
         }
+        Console.WriteLine(sb);
         Console.SetCursorPosition(0,0);
     }
 
@@ -157,6 +170,7 @@ public class Game
         {
             for (int j = 0; j < cells.GetLength(1) / 2; j++)
             {
+                
                 Cell temp = cells[i, j];
                 cells[i, j] = cells[i, cells.GetLength(1) - 1 - j];
                 cells[i, cells.GetLength(1) - 1 - j] = temp;
