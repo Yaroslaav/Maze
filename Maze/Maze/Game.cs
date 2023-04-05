@@ -145,10 +145,10 @@ public class Game
 
         do
         {
-            Cell[] neighbors = GetUnvisitedNeighbors(current);
-            if (neighbors.Length > 0)
+            List<Cell> neighbors = GetUnvisitedNeighbors(current);
+            if (neighbors.Count > 0)
             {
-                Cell chosen = neighbors[rnd.Next(neighbors.Length)];
+                Cell chosen = neighbors[rnd.Next(neighbors.Count)];
                 RemoveWall(current, chosen);
                 chosen.Visited = true;
                 stack.Push(current);
@@ -212,58 +212,39 @@ public class Game
         cells[(currentCell.Y + newCell.Y) >> 1, (currentCell.X + newCell.X) >> 1].Wall = false;
     }
 
-    public Cell[] GetUnvisitedNeighbors(Cell cell)
+    public List<Cell> GetUnvisitedNeighbors(Cell cell)
     {
         int x = cell.X;
         int y = cell.Y;
-        Cell[] neighbors = new Cell[4];
+        List<Cell> neighbors = new List<Cell>();
+        //Cell[] neighbors = new Cell[4];
         int count = 0;
 
         Cell top = GetCell(x, y - 2);
         if (top != null && !top.Visited)
         {
-            neighbors[count++] = top;
+            neighbors.Add(top);
         }
 
         Cell right = GetCell(x + 2, y);
         if (right != null && !right.Visited)
         {
-            neighbors[count++] = right;
+            neighbors.Add(right);
         }
 
         Cell bottom = GetCell(x, y + 2);
         if (bottom != null && !bottom.Visited)
         {
-            neighbors[count++] = bottom;
+            neighbors.Add(bottom);
         }
 
         Cell left = GetCell(x - 2, y);
         if (left != null && !left.Visited)
         {
-            neighbors[count++] = left;
+            neighbors.Add(left);
         }
 
-        Array.Resize(ref neighbors, count);
         return neighbors;
-    }
-    public Cell[] GetUnvisitedCells()
-    {
-        Cell[] unvisited = new Cell[width * height];
-        int count = 0;
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                if (!cells[y, x].Visited)
-                {
-                    unvisited[count++] = cells[y, x];
-                }
-            }
-        }
-
-        Array.Resize(ref unvisited, count);
-        return unvisited;
     }
 
 
