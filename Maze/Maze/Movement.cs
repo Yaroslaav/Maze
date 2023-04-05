@@ -9,8 +9,6 @@ public class Movement
         int XLastPosition = XPosition;
         int YLastPosition = YPosition;
 
-
-
         while (Console.KeyAvailable)
         {
             ConsoleKeyInfo key = Console.ReadKey(true);

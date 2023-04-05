@@ -29,6 +29,7 @@ public class Game
     {
         Console.CursorVisible = false;
         cells = new Cell[height, width];
+
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -39,6 +40,7 @@ public class Game
 
         movement.OnMove += MoveCharacter;
         GenerateField();
+
         stopWatch.Restart();
         Timer();
 
@@ -73,7 +75,6 @@ public class Game
         stopWatch.Start();
 
 
-        //stopWatch.Stop();
         TimeSpan elapsed = stopWatch.Elapsed;
         Console.WriteLine($"Час раунду: {elapsed.Hours}:{elapsed.Minutes}:{elapsed.Seconds}");
     }
@@ -82,6 +83,7 @@ public class Game
     {
         Console.SetCursorPosition(0, 1);
         StringBuilder sb = new StringBuilder();
+
         for (int y = 0; y < height - 1; y++)
         {
             for (int x = 0; x < width - 1; x++)
@@ -111,8 +113,8 @@ public class Game
         {
             sb.Append("#");
         }
+
         Console.WriteLine(sb);
-        //Console.SetCursorPosition(0,0);
     }
 
     public void MoveCharacter(Vector2 lastPosition, Vector2 newPosition)
@@ -125,6 +127,7 @@ public class Game
             Stop();
             return;
         }
+
         cells[YCurrentPosition, XCurrentPosition].Player = false;
         cells[YnewPosition, XnewPosition].Player = true;
 
@@ -136,10 +139,10 @@ public class Game
     public void GenerateField()
     {
         Cell current = cells[1, 1];
+        Stack<Cell> stack = new Stack<Cell>();
 
         current.Visited = true;
 
-        Stack<Cell> stack = new Stack<Cell>();
         do
         {
             Cell[] neighbors = GetUnvisitedNeighbors(current);
@@ -155,8 +158,6 @@ public class Game
             {
                 current = stack.Pop();
             }
-            //UpdateFieldOnScreen();
-            //Thread.Sleep(10);
         } while (stack.Count != 0);
 
         ReverseCells();
@@ -170,6 +171,7 @@ public class Game
 
         XFinishPosition = width - 2;
         YFinishPosition = height - 2;
+
         cells[YFinishPosition, XFinishPosition].Finish = true;
         cells[YFinishPosition, XFinishPosition].Wall = false;
 
@@ -188,6 +190,7 @@ public class Game
                 cells[i, cells.GetLength(1) - 1 - j] = temp;
             }
         }
+
         for (int i = 0; i < cells.GetLength(0); i++)
         {
             for (int j = 0; j < cells.GetLength(1) / 2; j++)
