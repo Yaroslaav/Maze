@@ -62,14 +62,14 @@ public class Game
     public void Stop()
     {
         Console.Beep(1000, 200);
-        
+
         isPlaying = false;
         Start();
     }
 
     private void Timer()
     {
-        Console.SetCursorPosition(0,0);
+        Console.SetCursorPosition(0, 0);
         stopWatch.Start();
 
 
@@ -90,10 +90,12 @@ public class Game
                 if (cells[y, x].Wall)
                 {
                     sb.Append("#");
-                }else if(cells[y, x].Player)
+                }
+                else if (cells[y, x].Player)
                 {
                     sb.Append("@");
-                }else if (cells[y, x].Finish)
+                }
+                else if (cells[y, x].Finish)
                 {
                     sb.Append("_");
                 }
@@ -161,7 +163,7 @@ public class Game
 
         XStartPosition = 1;
         YStartPosition = 1;
-        
+
         cells[YStartPosition, XStartPosition].Player = true;
         cells[YStartPosition, XStartPosition].Wall = false;
 
@@ -180,7 +182,7 @@ public class Game
         {
             for (int j = 0; j < cells.GetLength(1) / 2; j++)
             {
-                
+
                 Cell temp = cells[i, j];
                 cells[i, j] = cells[i, cells.GetLength(1) - 1 - j];
                 cells[i, cells.GetLength(1) - 1 - j] = temp;

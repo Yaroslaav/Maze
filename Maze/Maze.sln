@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Labirint2", "Labirint2\Labirint2.csproj", "{52FC4A88-28E4-4F1B-B163-FAF4B0BFDAFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maze", "Maze\Maze.csproj", "{90EECB49-9D96-4BBB-BBC3-A2CEFD361A3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{52FC4A88-28E4-4F1B-B163-FAF4B0BFDAFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{52FC4A88-28E4-4F1B-B163-FAF4B0BFDAFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52FC4A88-28E4-4F1B-B163-FAF4B0BFDAFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{52FC4A88-28E4-4F1B-B163-FAF4B0BFDAFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90EECB49-9D96-4BBB-BBC3-A2CEFD361A3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90EECB49-9D96-4BBB-BBC3-A2CEFD361A3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90EECB49-9D96-4BBB-BBC3-A2CEFD361A3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90EECB49-9D96-4BBB-BBC3-A2CEFD361A3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {CE6CA416-6880-4DDC-B69E-2B084ADF23A4}
+		SolutionGuid = {42964807-71AB-4C08-81F7-7A4AF337D671}
 	EndGlobalSection
 EndGlobal

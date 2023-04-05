@@ -9,7 +9,7 @@ public class Movement
         int XLastPosition = XPosition;
         int YLastPosition = YPosition;
 
-        
+
 
         while (Console.KeyAvailable)
         {
@@ -24,28 +24,28 @@ public class Movement
             {
 
                 case 'w':
-                    if(YPosition > 0)
+                    if (YPosition > 0)
                     {
                         if (!cells[YPosition - 1, XPosition].Wall)
                             YPosition--;
                     }
                     break;
                 case 's':
-                    if(YPosition < height - 1)
+                    if (YPosition < height - 1)
                     {
                         if (!cells[YPosition + 1, XPosition].Wall)
                             YPosition++;
                     }
                     break;
                 case 'a':
-                    if(XPosition > 0)
+                    if (XPosition > 0)
                     {
                         if (!cells[YPosition, XPosition - 1].Wall)
                             XPosition--;
                     }
                     break;
                 case 'd':
-                    if(XPosition < width - 1)
+                    if (XPosition < width - 1)
                     {
                         if (!cells[YPosition, XPosition + 1].Wall)
                             XPosition++;
@@ -67,4 +67,4 @@ public class Movement
 
 }
 
- 
+
