@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Numerics;
 public class Game
 {
     private bool isPlaying = true;
-
-    private char[,] field = new char[,] { };
 
     private int width = 21;
     private int height = 25;
