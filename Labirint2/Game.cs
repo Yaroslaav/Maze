@@ -12,8 +12,8 @@ public class Game
 
     private char[,] field = new char[,] { };
 
-    private int width = 11;
-    private int height = 15;
+    private int width = 21;
+    private int height = 25;
 
     private int XStartPosition = 0;
     private int YStartPosition = 0;
@@ -32,7 +32,7 @@ public class Game
 
     public void Start()
     {
-
+        Console.CursorVisible = false;
         cells = new Cell[height, width];
         for (int y = 0; y < height; y++)
         {
@@ -57,12 +57,13 @@ public class Game
     {
         while (isPlaying)
         {
-            movement.CheckButtons(field, XCurrentPosition, YCurrentPosition, width, height);
+            movement.CheckButtons(cells, XCurrentPosition, YCurrentPosition, width, height);
         }
 
     }
     public void Stop()
     {
+        Console.Beep(1000, 200);
         isPlaying = false;
         Start();
     }
@@ -73,174 +74,56 @@ public class Game
             for (int x = 0; x < width - 1; x++)
             {
 
-                /*if (cells[y, x].Visited)
-                {
-                    Console.Write(".");
-                }
-                else
-                {
-                    if (cells[y+1, x].TopWall)
-                    {
-
-                    }
-                }*/
-                if ((cells[y + 1, x].TopWall || cells[y, x + 1].LeftWall))
-                {
-                    Console.Write(".");
-                }
-                else
+                if (cells[y, x].Wall)
                 {
                     Console.Write("#");
+                }else if(cells[y, x].Player)
+                {
+                    Console.Write("@");
+                }else if (cells[y, x].Finish)
+                {
+                    Console.Write("_");
+                }
+                else
+                {
+                    Console.Write(".");
                 }
             }
+            Console.Write("#");
             Console.WriteLine();
         }
+        for (int i = 0; i < width; i++)
+        {
+            Console.Write("#");
+        }
+        Console.SetCursorPosition(0,0);
     }
-
-    
-    /*public void UpdateFieldOnScreen()
-    {
-        bool playerWasSet = false;
-        //StringBuilder sb = new StringBuilder();
-        for (int x = 0; x < width; x++)
-        {
-            Console.Write("#");
-        }
-        Console.Write("#\n");
-
-        for (int y = 0; y < height; y++)
-        {
-            Console.Write("#");
-
-            for (int x = 0; x < width; x++)
-            {
-                if (cells[y, x].BottomWall)
-                {
-                    if (x == XCurrentPosition && y == YCurrentPosition && !playerWasSet)
-                    {
-                        Console.Write("@");
-                        playerWasSet = true;
-                    }
-                    else if (x == XFinishPosition && y == YFinishPosition)
-                        Console.Write("_");
-                    else
-                        Console.Write("#");
-                }
-                else
-                {
-                    if (x == XCurrentPosition && y == YCurrentPosition && !playerWasSet)
-                    {
-                        Console.Write("@");
-                        playerWasSet = true;
-                    }
-                    else if (x == XFinishPosition && y == YFinishPosition)
-                        Console.Write("_");
-                    else
-                        Console.Write(".");
-                }
-
-                if (cells[y, x].RightWall)
-                {
-                    if (x == XCurrentPosition && y == YCurrentPosition && !playerWasSet)
-                    {
-                        Console.Write("@");
-                        playerWasSet = true;
-                    }
-                    else if (x == XFinishPosition && y == YFinishPosition)
-                        Console.Write("_");
-                    else
-                        Console.Write("#");
-                }
-                else
-                {
-                    if (x == XCurrentPosition && y == YCurrentPosition && !playerWasSet)
-                    {
-                        Console.Write("@");
-                        playerWasSet = true;
-                    }
-                    else if (x == XFinishPosition && y == YFinishPosition)
-                        Console.Write("_");
-                    else
-                        Console.Write(".");
-                }
-            }
-
-            for (int x = 0; x < width; x++)
-            {
-                if (cells[y, x].TopWall)
-                {
-                    Console.Write("##");
-                }
-                else
-                {
-                    Console.Write("#.");
-                }
-            }
-            Console.Write("\n");
-
-            //sb.Append("#\n");
-        }
-        //sb.Remove(0, width*2+2);
-        //sb.Remove(0, width*2+2);
-        //sb.Remove(0, width*2+2);
-        //sb.Insert(XCurrentPosition*YCurrentPosition,"@");
-        //sb.Insert(XFinishPosition*YFinishPosition,"_");
-        //Console.WriteLine(sb.ToString());
-
-
-    }*/
-
 
     public void MoveCharacter(Vector2 lastPosition, Vector2 newPosition)
     {
-        int YLastPosition = Convert.ToInt32(lastPosition.Y);
-        int XLastPosition = Convert.ToInt32(lastPosition.X);
-
         int YnewPosition = Convert.ToInt32(newPosition.Y);
         int XnewPosition = Convert.ToInt32(newPosition.X);
 
-        if (XnewPosition == XFinishPosition && YnewPosition == YFinishPosition)
+        if (cells[YnewPosition, XnewPosition].Finish)
         {
             Stop();
             return;
         }
+        cells[YCurrentPosition, XCurrentPosition].Player = false;
+        cells[YnewPosition, XnewPosition].Player = true;
 
         XCurrentPosition = XnewPosition;
         YCurrentPosition = YnewPosition;
 
-        //field[YnewPosition, XnewPosition] = '@';
-        //field[YLastPosition, XLastPosition] = '.';
         UpdateFieldOnScreen();
     }
-
     public void GenerateField()
     {
-        /*char[,] _field = new char[height, width];
-
-
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
-            {
-                _field[i, j] = '.';
-            }
-
-        }*/
-
-        GenerateObstacles();
-
-        //_field[YStartPosition, XStartPosition] = '@';
-        //_field[YFinishPosition, XFinishPosition] = '_';
-
-        //field = _field;
-    }
-
-    public void GenerateObstacles()
-    {
         Cell current = cells[1, 1];
+
         current.Visited = true;
+
         Stack<Cell> stack = new Stack<Cell>();
-        //return;
         do
         {
             Cell[] neighbors = GetUnvisitedNeighbors(current);
@@ -260,62 +143,53 @@ public class Game
             //Thread.Sleep(10);
         } while (stack.Count != 0);
 
+        ReverseCells();
+
+        XStartPosition = 1;
+        YStartPosition = 1;
+        
+        cells[YStartPosition, XStartPosition].Player = true;
+        cells[YStartPosition, XStartPosition].Wall = false;
+
+
+        XFinishPosition = width - 2;
+        YFinishPosition = height - 2;
+        cells[YFinishPosition, XFinishPosition].Finish = true;
+        cells[YFinishPosition, XFinishPosition].Wall = false;
+
 
     }
+
+    public void ReverseCells()
+    {
+        for (int i = 0; i < cells.GetLength(0); i++)
+        {
+            for (int j = 0; j < cells.GetLength(1) / 2; j++)
+            {
+                Cell temp = cells[i, j];
+                cells[i, j] = cells[i, cells.GetLength(1) - 1 - j];
+                cells[i, cells.GetLength(1) - 1 - j] = temp;
+            }
+        }
+        for (int i = 0; i < cells.GetLength(0); i++)
+        {
+            for (int j = 0; j < cells.GetLength(1) / 2; j++)
+            {
+                Cell temp = cells[i, j];
+                cells[i, j] = cells[cells.GetLength(0) - 1 - i, j];
+                cells[cells.GetLength(0) - 1 - i, j] = temp;
+            }
+        }
+    }
+
     public void RemoveWall(Cell currentCell, Cell newCell)
     {
         int x = currentCell.X - newCell.X;
         int y = currentCell.Y - newCell.Y;
+        currentCell.Wall = false;
+        newCell.Wall = false;
 
-        if (x == 1)
-        {
-            currentCell.LeftWall = false;
-            newCell.RightWall = false;
-            /*
-            cells[currentCell.Y - 1 < 0 ? 0 : currentCell.Y - 1, currentCell.X].BottomWall = false;
-            cells[newCell.Y - 1 < 0 ? 0 : newCell.Y - 1, newCell.X].BottomWall = false;
-
-            cells[currentCell.Y + 1 > height - 1 ? height - 1 : currentCell.Y + 1, currentCell.X].TopWall = false;
-            cells[newCell.Y + 1 > height - 1 ? height - 1 : newCell.Y + 1, newCell.X].TopWall = false;
-            */
-        }
-        else if (x == -1)
-        {
-            currentCell.RightWall = false;
-            newCell.LeftWall = false;
-            /*
-            cells[currentCell.Y - 1 < 0 ? 0 : currentCell.Y - 1, currentCell.X].BottomWall = false;
-            cells[newCell.Y - 1 < 0 ? 0 : newCell.Y - 1, newCell.X].BottomWall = false;
-
-            cells[currentCell.Y + 1 > height - 1 ? height - 1 : currentCell.Y + 1, currentCell.X].TopWall = false;
-            cells[newCell.Y + 1 > height - 1 ? height - 1 : newCell.Y + 1, newCell.X].TopWall = false;
-            */
-        }
-
-        if (y == 1)
-        {
-            currentCell.TopWall = false;
-            newCell.BottomWall = false;
-            /*
-            cells[currentCell.Y, currentCell.X - 1 < 0 ? 0 : currentCell.X - 1].RightWall = false;
-            cells[newCell.Y, newCell.X - 1 < 0 ? 0 : newCell.X - 1].RightWall = false;
-
-            cells[currentCell.Y, currentCell.X + 1 > width - 1 ? width - 1 : currentCell.X + 1].LeftWall = false;
-            cells[newCell.Y, newCell.X + 1 > width - 1 ? width - 1 : newCell.X + 1].LeftWall = false;
-        */
-        }
-        else if (y == -1)
-        {
-            currentCell.BottomWall = false;
-            newCell.TopWall = false;
-            /*
-            cells[currentCell.Y, currentCell.X - 1 < 0 ? 0 : currentCell.X - 1].RightWall = false;
-            cells[newCell.Y, newCell.X - 1 < 0 ? 0 : newCell.X - 1].RightWall = false;
-
-            cells[currentCell.Y, currentCell.X + 1 > width - 1 ? width - 1 : currentCell.X + 1].LeftWall = false;
-            cells[newCell.Y, newCell.X + 1 > width - 1 ? width - 1 : newCell.X + 1].LeftWall = false;
-        */
-        }
+        cells[(currentCell.Y + newCell.Y) >> 1, (currentCell.X + newCell.X) >> 1].Wall = false;
     }
 
     public Cell[] GetUnvisitedNeighbors(Cell cell)
@@ -392,22 +266,18 @@ public class Cell
     public int X { get; set; }
     public int Y { get; set; }
     public bool Visited { get; set; }
-    public bool TopWall { get; set; }
-    public bool BottomWall { get; set; }
-    public bool LeftWall { get; set; }
-    public bool RightWall { get; set; }
+    public bool Wall { get; set; }
+    public bool Player { get; set; }
+    public bool Finish { get; set; }
+
 
     public Cell(int x, int y)
     {
         X = x;
         Y = y;
         Visited = false;
-        TopWall = true;
-        BottomWall = true;
-        //TopWall = true;
-        //BottomWall = true;
-
-        LeftWall = true;
-        RightWall = true;
+        Wall = true;
+        Player = false;
+        Finish = false;
     }
 }

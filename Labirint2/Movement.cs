@@ -9,7 +9,7 @@ public class Movement
 {
     public Action<Vector2, Vector2> OnMove;
     ConsoleKey? lastKey = null;
-    public void CheckButtons(char[,] field, int XPosition, int YPosition, int width, int height)
+    public void CheckButtons(Cell[,] cells, int XPosition, int YPosition, int width, int height)
     {
         int XLastPosition = XPosition;
         int YLastPosition = YPosition;
@@ -31,28 +31,28 @@ public class Movement
                 case 'w':
                     if(YPosition > 0)
                     {
-                        if (field[YPosition - 1, XPosition] == '.' || field[YPosition - 1, XPosition] == '_')
+                        if (!cells[YPosition - 1, XPosition].Wall)
                             YPosition--;
                     }
                     break;
                 case 's':
                     if(YPosition < height - 1)
                     {
-                        if (field[YPosition + 1, XPosition] == '.' || field[YPosition + 1, XPosition] == '_')
+                        if (!cells[YPosition + 1, XPosition].Wall)
                             YPosition++;
                     }
                     break;
                 case 'a':
                     if(XPosition > 0)
                     {
-                        if (field[YPosition, XPosition - 1] == '.' || field[YPosition, XPosition - 1] == '_')
+                        if (!cells[YPosition, XPosition - 1].Wall)
                             XPosition--;
                     }
                     break;
                 case 'd':
                     if(XPosition < width - 1)
                     {
-                        if (field[YPosition, XPosition + 1] == '.' || field[YPosition, XPosition + 1] == '_')
+                        if (!cells[YPosition, XPosition + 1].Wall)
                             XPosition++;
                     }
 
