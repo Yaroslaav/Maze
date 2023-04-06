@@ -6,8 +6,8 @@ public class Game
 {
     private bool isPlaying = true;
 
-    private int width = 21;
-    private int height = 25;
+    private int width = 9;
+    private int height = 9;
 
     private int XStartPosition = 0;
     private int YStartPosition = 0;
@@ -21,27 +21,22 @@ public class Game
     private Cell[,] cells;
 
     Stopwatch stopWatch = new Stopwatch();
+    private int maxTimeInSeconds = 60;
+    private int lastBeepSecond;
 
-    Movement movement = new Movement();
     Random rnd = new Random();
+
+    ConsoleKey? lastKey = null;
 
     public void Start()
     {
         Console.CursorVisible = false;
         cells = new Cell[height, width];
 
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                cells[y, x] = new Cell(x, y);
-            }
-        }
-
-        movement.OnMove += MoveCharacter;
         GenerateField();
 
-        stopWatch.Restart();
+        stopWatch.Reset();
+
         Timer();
 
         XCurrentPosition = XStartPosition;
@@ -57,7 +52,7 @@ public class Game
         while (isPlaying)
         {
             Timer();
-            movement.CheckButtons(cells, XCurrentPosition, YCurrentPosition, width, height);
+            CheckButtons();
         }
 
     }
@@ -76,7 +71,28 @@ public class Game
 
 
         TimeSpan elapsed = stopWatch.Elapsed;
-        Console.WriteLine($"Час раунду: {elapsed.Hours}:{elapsed.Minutes}:{elapsed.Seconds}");
+        int totalSeconds = maxTimeInSeconds - Convert.ToInt32(stopWatch.Elapsed.TotalSeconds);
+        if(totalSeconds == 0)
+        {
+            Stop();
+            return;
+        }
+        if(lastBeepSecond > totalSeconds)
+        {
+            TimerBeeps(totalSeconds);
+        }
+
+        int minutes = (totalSeconds - totalSeconds % 60) / 60;
+        int seconds = totalSeconds % 60;
+        string time = minutes + ":" + seconds;
+
+        Console.WriteLine($"Залишилось часу: {time} ");
+        lastBeepSecond = totalSeconds;
+    }
+
+    private void TimerBeeps(int seconds)
+    {
+
     }
 
     public void UpdateFieldOnScreen()
@@ -88,22 +104,20 @@ public class Game
         {
             for (int x = 0; x < width - 1; x++)
             {
-
-                if (cells[y, x].Wall)
+                switch(cells[y, x].type)
                 {
-                    sb.Append("#");
-                }
-                else if (cells[y, x].Player)
-                {
-                    sb.Append("@");
-                }
-                else if (cells[y, x].Finish)
-                {
-                    sb.Append("_");
-                }
-                else
-                {
-                    sb.Append(".");
+                    case CellType.Wall:
+                        sb.Append("#");
+                        break;
+                    case CellType.Player:
+                        sb.Append("@");
+                        break;
+                    case CellType.Finish:
+                        sb.Append("_");
+                        break;
+                    default:
+                        sb.Append(".");
+                        break;
                 }
             }
             sb.Append("#");
@@ -117,19 +131,40 @@ public class Game
         Console.WriteLine(sb);
     }
 
-    public void MoveCharacter(Vector2 lastPosition, Vector2 newPosition)
+    public void MoveCharacter(Direction direction)
     {
-        int YnewPosition = Convert.ToInt32(newPosition.Y);
-        int XnewPosition = Convert.ToInt32(newPosition.X);
+        int YnewPosition = YCurrentPosition;
+        int XnewPosition = XCurrentPosition;
 
-        if (cells[YnewPosition, XnewPosition].Finish)
+        switch (direction)
         {
-            Stop();
-            return;
-        }
+            case Direction.Left:
+                XnewPosition = XnewPosition - 1 < 0 ? XnewPosition : XnewPosition - 1;
+                
+                break;
+            case Direction.Right:
+                XnewPosition = XnewPosition + 1 > width - 1 ? XnewPosition : XnewPosition + 1;
 
-        cells[YCurrentPosition, XCurrentPosition].Player = false;
-        cells[YnewPosition, XnewPosition].Player = true;
+                break;
+            case Direction.Up:
+                YnewPosition = YnewPosition - 1 < 0 ? YnewPosition : YnewPosition - 1;
+
+                break;
+            case Direction.Down:
+                YnewPosition = YnewPosition + 1 > height - 1 ? YnewPosition : YnewPosition + 1;
+
+                break;
+        }
+        switch(cells[YnewPosition, XnewPosition].type)
+        {
+            case CellType.Finish:
+                Stop();
+                return;
+            case CellType.Wall:
+                return;
+        }
+        cells[YCurrentPosition, XCurrentPosition].type = CellType.None;
+        cells[YnewPosition, XnewPosition].type = CellType.Player;
 
         XCurrentPosition = XnewPosition;
         YCurrentPosition = YnewPosition;
@@ -138,6 +173,14 @@ public class Game
     }
     public void GenerateField()
     {
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                cells[y, x] = new Cell(x, y);
+            }
+        }
+
         Cell current = cells[1, 1];
         Stack<Cell> stack = new Stack<Cell>();
 
@@ -165,15 +208,13 @@ public class Game
         XStartPosition = 1;
         YStartPosition = 1;
 
-        cells[YStartPosition, XStartPosition].Player = true;
-        cells[YStartPosition, XStartPosition].Wall = false;
+        cells[YStartPosition, XStartPosition].type = CellType.Player;
 
 
         XFinishPosition = width - 2;
         YFinishPosition = height - 2;
 
-        cells[YFinishPosition, XFinishPosition].Finish = true;
-        cells[YFinishPosition, XFinishPosition].Wall = false;
+        cells[YFinishPosition, XFinishPosition].type = CellType.Finish;
 
 
     }
@@ -206,10 +247,10 @@ public class Game
     {
         int x = currentCell.X - newCell.X;
         int y = currentCell.Y - newCell.Y;
-        currentCell.Wall = false;
-        newCell.Wall = false;
+        currentCell.type = CellType.None;
+        newCell.type = CellType.None;
 
-        cells[(currentCell.Y + newCell.Y) >> 1, (currentCell.X + newCell.X) >> 1].Wall = false;
+        cells[(currentCell.Y + newCell.Y) >> 1, (currentCell.X + newCell.X) >> 1].type = CellType.None;
     }
 
     public List<Cell> GetUnvisitedNeighbors(Cell cell)
@@ -217,8 +258,6 @@ public class Game
         int x = cell.X;
         int y = cell.Y;
         List<Cell> neighbors = new List<Cell>();
-        //Cell[] neighbors = new Cell[4];
-        int count = 0;
 
         Cell top = GetCell(x, y - 2);
         if (top != null && !top.Visited)
@@ -256,29 +295,53 @@ public class Game
         }
         return cells[y, x];
     }
-
-
-
-
-
-}
-public class Cell
-{
-    public int X { get; set; }
-    public int Y { get; set; }
-    public bool Visited { get; set; }
-    public bool Wall { get; set; }
-    public bool Player { get; set; }
-    public bool Finish { get; set; }
-
-
-    public Cell(int x, int y)
+    public void CheckButtons()
     {
-        X = x;
-        Y = y;
-        Visited = false;
-        Wall = true;
-        Player = false;
-        Finish = false;
+
+        Direction direction = Direction.None;
+
+        while (Console.KeyAvailable)
+        {
+            ConsoleKeyInfo key = Console.ReadKey(true);
+
+            if (lastKey == key.Key)
+                return;
+            direction = GetDirection(key);
+            lastKey = key.Key;
+
+        }
+
+
+        if (direction != Direction.None)
+        {
+            MoveCharacter(direction);
+        }   
+
+        lastKey = null;
+
+
     }
+
+    public Direction GetDirection(ConsoleKeyInfo key) => key.KeyChar switch
+    {
+        'w' => Direction.Up,
+        's' => Direction.Down,
+        'a' => Direction.Left,
+        'd' => Direction.Right,
+        _ => Direction.None,    
+    };
+
+
+
+
 }
+public enum Direction
+{
+    None,
+    Up,
+    Down,
+    Right,
+    Left,
+}
+
+
