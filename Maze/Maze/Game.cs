@@ -54,7 +54,6 @@ public class Game
 
     Stopwatch stopWatch = new Stopwatch();
     private int maxTimeInSeconds = 60;
-    private int lastBeepSecond;
 
     Random rnd = new Random();
 
@@ -125,8 +124,7 @@ public class Game
         int seconds = totalSeconds % 60;
         string time = minutes + ":" + seconds;
 
-        Console.WriteLine($"Time left: {time} ");
-        lastBeepSecond = totalSeconds;
+        Console.WriteLine($"Time left: {time}  ");
     }
 
     #region Updates
