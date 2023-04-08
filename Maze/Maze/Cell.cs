@@ -22,4 +22,5 @@ public enum CellType
     Wall,
     Player,
     Finish,
+    Coin,
 }
